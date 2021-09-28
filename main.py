@@ -3,12 +3,14 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import pprint
+
 import api
 
 app = FastAPI()
 
 origins = [
-    "http://localhost",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -25,11 +27,29 @@ def get_characters():
     return api.request("characters")
 
 
+@app.get("/characters/{id}")
+def get_character(id: int):
+    character_info = api.request(f"characters/{id}")
+    character_comics = api.request(f"characters/{id}/comics")
+
+    return {
+        "info": character_info['data']['results'][0], 
+        "comics": character_comics['data']['results']
+    }
+
+
 @app.get("/comics")
 def get_comics():
     return api.request("comics")
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/comics/{id}")
+def get_comic(id: int):
+    comic_info = api.request(f"comics/{id}")
+    comic_characters = api.request(f"comics/{id}/characters")
+
+    return {
+        "info": comic_info['data']['results'][0], 
+        "characters": comic_characters['data']['results']
+    }
+

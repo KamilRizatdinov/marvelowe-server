@@ -8,6 +8,10 @@
 
 # MarweLove-server
 
+## Overview
+
+This is backend web app written using [Python](https://www.python.org/) handling api calls to [MarvelAPI](https://developer.marvel.com).
+
 ## Prerequisites
 
 1. Create virtualenv:
@@ -21,6 +25,11 @@
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
+   ```
+4. Create `.env` file with keys:
+   ```
+   PUBLIC_KEY="<public key for MarvelApi>"
+   PRIVATE_KEY="<private key for MarvelApi>"
    ```
 
 ## How to run

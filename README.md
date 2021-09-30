@@ -36,7 +36,7 @@ This is backend web app written using [Python](https://www.python.org/) handling
 
 ```bash
 cd marvelowe-server
-uvicorn main:app --reload
+uvicorn main:app  --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Contacts

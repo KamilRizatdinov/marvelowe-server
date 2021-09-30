@@ -28,7 +28,7 @@ def get_specific_characters(name_starts_with: str):
     return api.request("characters", {"nameStartsWith": name_starts_with})
 
 
-@app.get("/characters/{id}")
+@app.get("/character/{id}")
 def get_character(id: int):
     character_info = api.request(f"characters/{id}")
     character_comics = api.request(f"characters/{id}/comics")
@@ -49,7 +49,7 @@ def get_specific_characters(title_starts_with: str):
     return api.request("comics", {"titleStartsWith": title_starts_with})
 
 
-@app.get("/comics/{id}")
+@app.get("/comic/{id}")
 def get_comic(id: int):
     comic_info = api.request(f"comics/{id}")
     comic_characters = api.request(f"comics/{id}/characters")

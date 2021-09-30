@@ -23,6 +23,11 @@ def get_characters():
     return api.request("characters")
 
 
+@app.get("/characters/{name_starts_with}")
+def get_specific_characters(name_starts_with: str):
+    return api.request("characters", {"nameStartsWith": name_starts_with})
+
+
 @app.get("/characters/{id}")
 def get_character(id: int):
     character_info = api.request(f"characters/{id}")
@@ -37,6 +42,11 @@ def get_character(id: int):
 @app.get("/comics")
 def get_comics():
     return api.request("comics")
+
+
+@app.get("/comics/{title_starts_with}")
+def get_specific_characters(title_starts_with: str):
+    return api.request("comics", {"titleStartsWith": title_starts_with})
 
 
 @app.get("/comics/{id}")

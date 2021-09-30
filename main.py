@@ -1,3 +1,6 @@
+import logging
+
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,16 +22,18 @@ app.add_middleware(
 
 
 @app.get("/characters")
-def get_characters():
-    return api.request("characters")
+def get_characters(
+    query: Optional[str] = None,
+    offset: Optional[int] = None
+):
+    return api.request(
+        "characters",
+        {"nameStartsWith": query} if query else None,
+        {"offset": offset}
+    )
 
 
-@app.get("/characters/{name_starts_with}")
-def get_specific_characters(name_starts_with: str):
-    return api.request("characters", {"nameStartsWith": name_starts_with})
-
-
-@app.get("/character/{id}")
+@app.get("/characters/{id}")
 def get_character(id: int):
     character_info = api.request(f"characters/{id}")
     character_comics = api.request(f"characters/{id}/comics")
@@ -40,16 +45,18 @@ def get_character(id: int):
 
 
 @app.get("/comics")
-def get_comics():
-    return api.request("comics")
+def get_comics(
+    query: Optional[str] = None,
+    offset: Optional[int] = None
+):
+    return api.request(
+        "comics",
+        {"titleStartsWith": query} if query else None,
+        {"offset": offset}
+    )
 
 
-@app.get("/comics/{title_starts_with}")
-def get_specific_characters(title_starts_with: str):
-    return api.request("comics", {"titleStartsWith": title_starts_with})
-
-
-@app.get("/comic/{id}")
+@app.get("/comics/{id}")
 def get_comic(id: int):
     comic_info = api.request(f"comics/{id}")
     comic_characters = api.request(f"comics/{id}/characters")

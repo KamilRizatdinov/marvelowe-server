@@ -32,6 +32,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_user_from_db(username: str) -> Optional[UserDB]:
+    logger.info("Fetching %s from DB", username)
+
     return _USERS_DB.get(username, None)
 
 

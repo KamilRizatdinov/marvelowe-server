@@ -12,7 +12,20 @@ PUBLIC_KEY = os.getenv("PUBLIC_KEY")
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
 
-def request(path, starts_with=None, id=None, limit=None):
+def request(path, starts_with: dict = None, id_ = None, limit: dict = None):
+    """
+    
+    :param path: 
+    :type path: 
+    :param starts_with: 
+    :type starts_with: 
+    :param id_: 
+    :type id_: 
+    :param limit: {"offset": offset} 
+    :type limit: dict
+    :return: 
+    :rtype: 
+    """
     ts = str(int(time.time()))
     m_hash = hashlib.md5()
     ts_str_byte = bytes(ts, "utf-8")
@@ -26,14 +39,18 @@ def request(path, starts_with=None, id=None, limit=None):
     if starts_with:
         payload.update(starts_with)
     
-    if id:
-        payload.update(id)
+    if id_:
+        payload.update(id_)
     
     if limit: 
         payload.update(limit)
 
+    return _request_marvel_api(path, payload)
+    
+
+def _request_marvel_api(path, payload):
     r = requests.get(
-        f"https://gateway.marvel.com/v1/public/{path}", 
+        f"https://gateway.marvel.com/v1/public/{path}",
         params=payload
     )
 

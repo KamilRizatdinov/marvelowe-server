@@ -22,6 +22,7 @@ class UserDB(User):
 
 def hash_password(password: str) -> str:
     # TODO: rewrite, bad
+    # TODO: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
     return f"hashed-{password}"
 
 

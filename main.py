@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from typing import Optional
 from fastapi import FastAPI
@@ -6,7 +7,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import api
 
+from auth import login_endpoint, register_endpoint
+
+logger = logging.getLogger("marwelove")
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(
+    logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
+logger.addHandler(handler)
+
 app = FastAPI()
+
 
 origins = [
     "*",
@@ -20,16 +33,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.post("/token")(login_endpoint)
+app.post("/register")(register_endpoint)
+
 
 @app.get("/characters")
 def get_characters(
     query: Optional[str] = None,
-    offset: Optional[int] = None
+    offset: Optional[int] = None,
 ):
     return api.request(
-        "characters",
-        {"nameStartsWith": query} if query else None,
-        {"offset": offset}
+        "characters", {"nameStartsWith": query} if query else None, {"offset": offset}
     )
 
 
@@ -45,14 +59,9 @@ def get_character(id: int):
 
 
 @app.get("/comics")
-def get_comics(
-    query: Optional[str] = None,
-    offset: Optional[int] = None
-):
+def get_comics(query: Optional[str] = None, offset: Optional[int] = None):
     return api.request(
-        "comics",
-        {"titleStartsWith": query} if query else None,
-        {"offset": offset}
+        "comics", {"titleStartsWith": query} if query else None, {"offset": offset}
     )
 
 

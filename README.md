@@ -36,7 +36,17 @@ This is backend web app written using [Python](https://www.python.org/) handling
 
 ```bash
 cd marvelowe-server
-uvicorn main:app  --reload --host 0.0.0.0 --port 8000
+make run
+```
+
+## How to run tests
+```bash
+make test
+```
+
+## How to run tests with coverage
+```bash
+make cov
 ```
 
 ## Contacts

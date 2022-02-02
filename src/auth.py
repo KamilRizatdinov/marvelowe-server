@@ -18,7 +18,7 @@ class User(BaseModel):
 
 class UserDB(User):
     hashed_password: str
-    access_token: str
+    access_token: Optional[str] = None
 
 
 def hash_password(password: str) -> str:

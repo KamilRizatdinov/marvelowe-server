@@ -1,2 +1,2 @@
 # for unicorn
-from src.application import app # noqa
+from src.application import app  # noqa

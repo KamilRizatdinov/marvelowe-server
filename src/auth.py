@@ -18,12 +18,17 @@ class User(BaseModel):
 
 class UserDB(User):
     hashed_password: str
+    access_token: str
 
 
 def hash_password(password: str) -> str:
     # TODO: rewrite, bad
-    # TODO: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
     return f"hashed-{password}"
+
+
+def generate_token(username):
+    # TODO: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+    return f"{username}-token-{len(_USERS_DB)}"
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -31,9 +36,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return get_user_from_db(token)
 
 
+def get_user_from_db_by_token(token: str) -> Optional[UserDB]:
+    logger.info("Fetching %s from DB, by token", token)
+
+    for entry in _USERS_DB.values():
+        if entry.access_token == token:
+            return entry
+    return None
+
+
 def get_user_from_db(username: str) -> Optional[UserDB]:
     logger.info("Fetching %s from DB", username)
-
     return _USERS_DB.get(username, None)
 
 
@@ -47,7 +60,11 @@ def register_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
     if user_from_db:
         raise HTTPException(status_code=400, detail="User exists")
     hashed_password = hash_password(form_data.password)
-    user = UserDB(username=form_data.username, hashed_password=hashed_password)
+    user = UserDB(
+        username=form_data.username,
+        hashed_password=hashed_password,
+        access_token=generate_token(form_data.username),
+    )
     save_user(user)
 
 
@@ -61,4 +78,4 @@ def login_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
     if hashed_password != user_from_db.hashed_password:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    return {"access_token": user_from_db.username, "token_type": "bearer"}
+    return {"access_token": user_from_db.access_token, "token_type": "bearer"}

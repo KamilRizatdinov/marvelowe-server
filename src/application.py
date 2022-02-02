@@ -1,12 +1,13 @@
 import logging
 import sys
 
-from typing import Optional
-from fastapi import FastAPI
+from typing import Optional, Any
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
 
 from src import api
-from src.auth import login_endpoint, register_endpoint
+from src.auth import login_endpoint, register_endpoint, get_current_user, oauth2_scheme
 
 logger = logging.getLogger("marwelove")
 logger.setLevel(logging.DEBUG)
@@ -34,6 +35,25 @@ app.add_middleware(
 
 app.post("/token")(login_endpoint)
 app.post("/register")(register_endpoint)
+
+
+@app.middleware("http")
+async def process_auth(request, call_next):
+    """check auth header"""
+    logger.info("in middleware, req = %s", request.url.path)
+    if "register" not in request.url.path and "token" not in request.url.path:
+        try:
+            auth_param = await oauth2_scheme.__call__(request)
+            logger.info("auth_param %s", auth_param)
+        except HTTPException as e:
+            e: Any = e
+            # return Response(status_code=400, content=e.detail)  
+            pass
+        # 
+    else:
+        logger.info("avoiding auth")
+    response = await call_next(request)
+    return response
 
 
 @app.get("/characters")

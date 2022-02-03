@@ -15,6 +15,9 @@ def db_setup():
 
 
 @pytest.fixture
-def setup(mocker):
+def setup_marvel_api(mocker):
     """contains useful mocks"""
-    mocker.patch("src.api._request_marvel_api", return_value={})
+    mocker.patch(
+        "src.api._request_marvel_api",
+        return_value={"data": {"results": ["testing information"]}},
+    )

@@ -1,9 +1,11 @@
 import logging
 import sys
+from pprint import pformat
 
 from typing import Optional, Any
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security.utils import get_authorization_scheme_param
 from starlette.responses import Response
 
 from src import api
@@ -41,17 +43,31 @@ app.post("/register")(register_endpoint)
 async def process_auth(request, call_next):
     """check auth header"""
     logger.info("in middleware, req = %s", request.url.path)
-    if "register" not in request.url.path and "token" not in request.url.path:
-        try:
-            auth_param = await oauth2_scheme.__call__(request)
-            logger.info("auth_param %s", auth_param)
-        except HTTPException as e:
-            e: Any = e
-            # return Response(status_code=400, content=e.detail)  
-            pass
-        # 
-    else:
+    KNOWN_EXCEPTIONS = ["register", "token"]
+    if any([v in request.url.path for v in KNOWN_EXCEPTIONS]):
         logger.info("avoiding auth")
+        response = await call_next(request)
+        return response
+
+    # NOTE: very similar to fastapi.security.oauth2.OAuth2PasswordBearer.__call__
+    authorization: str = request.headers.get("Authorization")
+    scheme, auth_param = get_authorization_scheme_param(authorization)
+    if not authorization or scheme.lower() != "bearer":
+        logger.error(
+            "Not authenticated for header %s. Scheme — %s, param -%s",
+            authorization,
+            scheme,
+            auth_param,
+        )
+        if not authorization:
+            logger.error("All headers - %s", pformat(request.headers))
+        return Response(status_code=400, content="Not authenticated")
+    logger.info("auth_param %s", auth_param)
+    user = await get_current_user(auth_param)
+    if not user:
+        logger.error("Given token %s, no user found", auth_param)
+        return Response(status_code=400, content="Not authenticated")
+
     response = await call_next(request)
     return response
 

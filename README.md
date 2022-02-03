@@ -49,6 +49,15 @@ make test
 make cov
 ```
 
+## How to avoid CORS error
+```bash
+open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args -user-data-dir=”/tmp/chrome_dev_test” -disable-web-security
+```
+
+## Disable Auth
+
+Run app with `make run-no-auth`
+
 ## Contacts
 
 If you have any questions or ideas, write us in [Telegram](https://telegram.org):

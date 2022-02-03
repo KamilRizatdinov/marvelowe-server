@@ -1,3 +1,5 @@
+import os
+from pprint import pformat
 from typing import Optional, Dict
 
 from fastapi import Depends, HTTPException
@@ -12,11 +14,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 _USERS_DB: Dict[str, "UserDB"] = dict()
 
 
-class User(BaseModel):
+class UserDB(BaseModel):
     username: str
-
-
-class UserDB(User):
     hashed_password: str
     access_token: Optional[str] = None
 
@@ -33,7 +32,7 @@ def generate_token(username):
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     # we assume token is username
-    return get_user_from_db(token)
+    return get_user_from_db_by_token(token)
 
 
 def get_user_from_db_by_token(token: str) -> Optional[UserDB]:
@@ -79,3 +78,18 @@ def login_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     return {"access_token": user_from_db.access_token, "token_type": "bearer"}
+
+
+def reload():
+    if os.getenv("DISABLE_AUTH", False):
+        user = UserDB(
+            username="admin",
+            hashed_password=hash_password("admin"),
+            access_token=generate_token("admin"),
+        )
+        save_user(user)
+        
+        logger.critical("DISABLE_AUTH mode is enabled, created admin user")
+        logger.critical("All users - %s", pformat(_USERS_DB))
+
+reload()

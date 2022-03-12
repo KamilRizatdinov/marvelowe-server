@@ -79,15 +79,28 @@ async def get_characters(
     request: Request,
     query: Optional[str] = None,
     offset: Optional[int] = None,
+    onlyBookmarked: bool = False,
 ):
     authorization: str = request.headers.get("Authorization")
     _, auth_param = get_authorization_scheme_param(authorization)
     user = await get_current_user(auth_param)
-    characters =  api.request(
-        "characters", {"nameStartsWith": query} if query else None, {"offset": offset}
-    )
-    for character in characters["data"]["results"]:
-        character["bookmark"] = is_bookmarked(user.username, character["id"])
+
+    if onlyBookmarked:
+        characters =  api.request(
+            "characters", {"nameStartsWith": query} if query else None, {"offset": offset * 2}
+        )
+
+        characters["data"]["results"] = list(filter(lambda x: is_bookmarked(user.username, x["id"]), list(characters["data"]["results"])))
+
+        for character in characters["data"]["results"]:
+            character["bookmark"] = True
+    else:
+        characters =  api.request(
+            "characters", {"nameStartsWith": query} if query else None, {"offset": offset}
+        )
+
+        for character in characters["data"]["results"]:
+            character["bookmark"] = is_bookmarked(user.username, character["id"])
 
     return characters
 

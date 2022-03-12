@@ -8,4 +8,4 @@ test:
 	pytest
 
 cov:
-	pytest --cov=src --cov-report html:cov_html tests/
+	pytest --cov=src --cov-branch  --cov-report term-missing tests/ -vv

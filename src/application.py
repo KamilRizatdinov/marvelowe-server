@@ -2,14 +2,16 @@ import logging
 import sys
 from pprint import pformat
 
-from typing import Optional, Any
-from fastapi import FastAPI, Depends, HTTPException
+from typing import Optional
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.utils import get_authorization_scheme_param
 from starlette.responses import Response
 
 from src import api
 from src.auth import login_endpoint, register_endpoint, get_current_user, oauth2_scheme
+from src.bookmarks  import add_character_bookmark, get_all_character_bookmarks, is_bookmarked
+
 
 logger = logging.getLogger("marwelove")
 logger.setLevel(logging.DEBUG)
@@ -73,18 +75,30 @@ async def process_auth(request, call_next):
 
 
 @app.get("/characters")
-def get_characters(
+async def get_characters(
+    request: Request,
     query: Optional[str] = None,
     offset: Optional[int] = None,
 ):
-    return api.request(
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+    characters =  api.request(
         "characters", {"nameStartsWith": query} if query else None, {"offset": offset}
     )
+    for character in characters["data"]["results"]:
+        character["bookmark"] = is_bookmarked(user.username, character["id"])
+
+    return characters
 
 
 @app.get("/characters/{id}")
-def get_character(id: int):
+async def get_character(request: Request, id: int):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
     character_info = api.request(f"characters/{id}")
+    character_info["data"]["results"][0]["bookmark"] = is_bookmarked(user.username, id)
     character_comics = api.request(f"characters/{id}/comics")
 
     return {
@@ -109,3 +123,20 @@ def get_comic(id: int):
         "info": comic_info["data"]["results"][0],
         "characters": comic_characters["data"]["results"],
     }
+
+
+@app.post("/bookmark/characters/{id}")
+async def bookmark_character(request: Request, id: int):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+    add_character_bookmark(user.username, id)
+    return {}
+
+@app.get("/bookmark/characters")
+async def get_bookmark_character(request: Request):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+    bookmarks = get_all_character_bookmarks(user.username)
+    return {"character_bookmarks": bookmarks}

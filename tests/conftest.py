@@ -21,5 +21,5 @@ def setup_marvel_api(mocker):
     """contains useful mocks"""
     mocker.patch(
         "src.api._request_marvel_api",
-        return_value={"data": {"results": [{"data": "testing information", "id":1}]}},
+        return_value={"data": {"results": [{"data": "testing information", "id": 1}]}},
     )

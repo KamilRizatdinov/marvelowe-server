@@ -2,7 +2,7 @@
 <img src="./images/logo.png" width="600px" alt="mar-we-love-logo"/>&nbsp;
 </p>
 
-[![Maintenance](https://img.shields.io/maintenance/yes/2021?style=for-the-badge)]()
+[![Maintenance](https://img.shields.io/maintenance/yes/2022?style=for-the-badge)]()
 [![GitHub contributors](https://img.shields.io/github/contributors/KamilRizatdinov/marwelove-server?style=for-the-badge)](https://github.com/KamilRizatdinov/marwelove-server/graphs/contributors)
 [![GitHub license](https://img.shields.io/badge/license-mit-orange.svg?style=for-the-badge)](https://github.com/KamilRizatdinov/marwelove-server/blob/master/LICENSE)
 

@@ -1,11 +1,11 @@
+import logging
 import os
 from pprint import pformat
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
-import logging
 
 logger = logging.getLogger("marwelove")
 
@@ -88,8 +88,9 @@ def reload():
             access_token=generate_token("admin"),
         )
         save_user(user)
-        
+
         logger.critical("DISABLE_AUTH mode is enabled, created admin user")
         logger.critical("All users - %s", pformat(_USERS_DB))
+
 
 reload()

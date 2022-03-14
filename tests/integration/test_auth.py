@@ -1,8 +1,9 @@
 import os
 
 from fastapi.testclient import TestClient
+
 from src.application import app
-from src.auth import get_user_from_db, save_user, UserDB, reload
+from src.auth import UserDB, get_user_from_db, reload, save_user
 
 client = TestClient(app)
 
@@ -46,7 +47,7 @@ def test_token_existing_user_wrong_password(db_setup):
 
 
 def test_disable_auth_env(db_setup):
-    os.environ["DISABLE_AUTH"] = '1'
+    os.environ["DISABLE_AUTH"] = "1"
     reload()
     assert get_user_from_db("admin") is not None
     del os.environ["DISABLE_AUTH"]

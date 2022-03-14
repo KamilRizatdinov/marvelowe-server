@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from src.application import app
 from src.bookmarks import get_all_character_bookmarks
 
@@ -10,13 +11,17 @@ def test_add_get_bookmark_chapter(setup_marvel_api, db_setup):
     response = client.post("/token", data={"username": "birdi7", "password": "123"})
     token = response.json()["access_token"]
 
-    response = client.post("/bookmark/characters/1", data={"username": "birdi7", "password": "123"},  headers={"Authorization": f"Bearer {token}"})
+    response = client.post(
+        "/bookmark/characters/1",
+        data={"username": "birdi7", "password": "123"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert response.status_code == 200
     assert response.json() == {}
 
-    response = client.get("/bookmark/characters",  headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/bookmark/characters", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
-    assert response.json()["character_bookmarks"] == get_all_character_bookmarks('birdi7')
+    assert response.json()["character_bookmarks"] == get_all_character_bookmarks("birdi7")
 
 
 def test_get_bookmark_chapter(setup_marvel_api, db_setup):
@@ -24,6 +29,6 @@ def test_get_bookmark_chapter(setup_marvel_api, db_setup):
     response = client.post("/token", data={"username": "birdi7", "password": "123"})
     token = response.json()["access_token"]
 
-    response = client.get("/bookmark/characters",  headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/bookmark/characters", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json()["character_bookmarks"] == []

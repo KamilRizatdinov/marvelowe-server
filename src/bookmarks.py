@@ -1,17 +1,15 @@
+from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import Dict, Optional
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
-import logging
 
 logger = logging.getLogger("marwelove")
 
 _BOOKMARK_CHARACTER_DB: Dict[str, set[int]] = defaultdict(set)
 
 
-def is_bookmarked(username:str, id: int) -> bool:
+def is_bookmarked(username: str, id: int) -> bool:
     return id in _BOOKMARK_CHARACTER_DB.get(username, [])
 
 

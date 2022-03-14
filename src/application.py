@@ -1,6 +1,5 @@
 import logging
 import sys
-from pprint import pformat
 from typing import Optional
 
 from fastapi import FastAPI, Request
@@ -62,8 +61,6 @@ async def process_auth(request, call_next):
             scheme,
             auth_param,
         )
-        if not authorization:
-            logger.error("All headers - %s", pformat(request.headers))
         return Response(status_code=400, content="Not authenticated")
     logger.info("auth_param %s", auth_param)
     user = await get_current_user(auth_param)
@@ -88,7 +85,7 @@ async def get_characters(
     user = await get_current_user(auth_param)
 
     if onlyBookmarked:
-        characters = api.request("characters", {"nameStartsWith": query} if query else None, {"offset": offset * 2})
+        characters = api.request("characters", {"nameStartsWith": query} if query else None, {"offset": offset})
 
         characters["data"]["results"] = list(
             filter(lambda x: is_bookmarked(user.username, x["id"]), list(characters["data"]["results"]))

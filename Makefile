@@ -9,4 +9,4 @@ test:
 
 TEST_COVERAGE_PERCENTAGE=95
 cov:
-	pytest --cov=src --cov-branch --cov-branch --cov-fail-under=$(TEST_COVERAGE_PERCENTAGE) --cov-report term-missing tests/ -vv
+	pytest --cov=src --cov-branch --cov-fail-under=$(TEST_COVERAGE_PERCENTAGE) --cov-report term-missing tests/ -vv

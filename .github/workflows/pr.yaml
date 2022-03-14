@@ -35,7 +35,7 @@ jobs:
 
       - name: Build coverage file
         run: |
-          pytest --junitxml=pytest.xml --cov-report=term-missing --cov=app tests/ | tee pytest-coverage.txt
+          PUBLIC_KEY="$PUBLIC_KEY" PRIVATE_KEY="$PRIVATE_KEY" pytest --junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ | tee pytest-coverage.txt
 
       - name: Pytest coverage comment
         uses: MishaKav/pytest-coverage-comment@main

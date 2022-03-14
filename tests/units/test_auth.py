@@ -1,4 +1,4 @@
-from src.auth import hash_password, UserDB, save_user, get_user_from_db
+from src.auth import UserDB, get_user_from_db, hash_password, save_user
 
 
 def test_hash_password():

@@ -1,10 +1,7 @@
 from fastapi.testclient import TestClient
 
 from src.application import app
-from src.bookmarks import (
-    get_all_character_bookmarks,
-    get_all_comics_bookmarks,
-)
+from src.bookmarks import get_all_character_bookmarks, get_all_comics_bookmarks
 
 client = TestClient(app)
 

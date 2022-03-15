@@ -38,4 +38,3 @@ def test_get_all_comics_bookmarks():
     add_comics_bookmark("admin", 1)
     add_comics_bookmark("admin", 2)
     assert get_all_comics_bookmarks("admin") == [1, 2]
-

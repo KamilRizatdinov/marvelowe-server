@@ -38,7 +38,6 @@ def get_all_comics_bookmarks(username: str) -> Optional[list[int]]:
 
 
 def add_comics_bookmark(username: str, id: int) -> None:
-    print("here")
     if id in _BOOKMARK_COMICS_DB[username]:
         _BOOKMARK_COMICS_DB[username].remove(id)
         logger.debug("%s unbookmark comics with id=%d", username, id)

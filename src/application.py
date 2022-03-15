@@ -188,7 +188,6 @@ async def get_bookmark_character(request: Request):
 
 @app.post("/bookmark/comics/{id}")
 async def bookmark_comic(request: Request, id: int):
-    print("here")
     authorization: str = request.headers.get("Authorization")
     _, auth_param = get_authorization_scheme_param(authorization)
     user = await get_current_user(auth_param)

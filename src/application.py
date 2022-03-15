@@ -12,10 +12,10 @@ from src import api
 from src.auth import get_current_user, login_endpoint, register_endpoint
 from src.bookmarks import (
     add_character_bookmark,
-    get_all_character_bookmarks,
-    is_bookmarked,
     add_comics_bookmark,
+    get_all_character_bookmarks,
     get_all_comics_bookmarks,
+    is_bookmarked,
     is_comics_bookmarked
 )
 

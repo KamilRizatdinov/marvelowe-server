@@ -135,7 +135,7 @@ async def get_comics(
     user = await get_current_user(auth_param)
 
     if onlyBookmarked:
-        comics = api.request("comics", {"StartsWith": query} if query else None, {"offset": offset * 2})
+        comics = api.request("comics", {"StartsWith": query} if query else None, {"offset": offset})
 
         comics["data"]["results"] = list(
             filter(lambda x: is_comics_bookmarked(user.username, x["id"]), list(comics["data"]["results"]))
@@ -150,7 +150,6 @@ async def get_comics(
             comic["bookmark"] = is_comics_bookmarked(user.username, comic["id"])
 
     return comics
-
 
 
 @app.get("/comics/{id}")
@@ -193,6 +192,7 @@ async def bookmark_comic(request: Request, id: int):
     user = await get_current_user(auth_param)
     add_comics_bookmark(user.username, id)
     return {}
+
 
 @app.get("/bookmark/comics")
 async def get_bookmark_comic(request: Request):

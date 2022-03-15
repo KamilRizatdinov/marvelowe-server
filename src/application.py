@@ -16,7 +16,7 @@ from src.bookmarks import (
     get_all_character_bookmarks,
     get_all_comics_bookmarks,
     is_bookmarked,
-    is_comics_bookmarked
+    is_comics_bookmarked,
 )
 
 logger = logging.getLogger("marwelove")
@@ -126,7 +126,7 @@ async def get_character(request: Request, id: int):
 @app.get("/comics")
 async def get_comics(
     request: Request,
-    query: Optional[str] = None, 
+    query: Optional[str] = None,
     offset: Optional[int] = None,
     onlyBookmarked: bool = False,
 ):

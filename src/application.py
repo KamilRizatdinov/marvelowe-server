@@ -11,8 +11,11 @@ from src import api
 from src.auth import get_current_user, login_endpoint, register_endpoint
 from src.bookmarks import (
     add_character_bookmark,
+    add_comics_bookmark,
     get_all_character_bookmarks,
+    get_all_comics_bookmarks,
     is_bookmarked,
+    is_comics_bookmarked,
 )
 
 logger = logging.getLogger("marwelove")
@@ -118,13 +121,41 @@ async def get_character(request: Request, id: int):
 
 
 @app.get("/comics")
-def get_comics(query: Optional[str] = None, offset: Optional[int] = None):
-    return api.request("comics", {"titleStartsWith": query} if query else None, {"offset": offset})
+async def get_comics(
+    request: Request,
+    query: Optional[str] = None,
+    offset: Optional[int] = None,
+    onlyBookmarked: bool = False,
+):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+
+    if onlyBookmarked:
+        comics = api.request("comics", {"StartsWith": query} if query else None, {"offset": offset})
+
+        comics["data"]["results"] = list(
+            filter(lambda x: is_comics_bookmarked(user.username, x["id"]), list(comics["data"]["results"]))
+        )
+
+        for comic in comics["data"]["results"]:
+            comic["bookmark"] = True
+    else:
+        comics = api.request("comics", {"titleStartsWith": query} if query else None, {"offset": offset})
+
+        for comic in comics["data"]["results"]:
+            comic["bookmark"] = is_comics_bookmarked(user.username, comic["id"])
+
+    return comics
 
 
 @app.get("/comics/{id}")
-def get_comic(id: int):
+async def get_comic(request: Request, id: int):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
     comic_info = api.request(f"comics/{id}")
+    comic_info["data"]["results"][0]["bookmark"] = is_comics_bookmarked(user.username, id)
     comic_characters = api.request(f"comics/{id}/characters")
 
     return {
@@ -149,3 +180,21 @@ async def get_bookmark_character(request: Request):
     user = await get_current_user(auth_param)
     bookmarks = get_all_character_bookmarks(user.username)
     return {"character_bookmarks": bookmarks}
+
+
+@app.post("/bookmark/comics/{id}")
+async def bookmark_comic(request: Request, id: int):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+    add_comics_bookmark(user.username, id)
+    return {}
+
+
+@app.get("/bookmark/comics")
+async def get_bookmark_comic(request: Request):
+    authorization: str = request.headers.get("Authorization")
+    _, auth_param = get_authorization_scheme_param(authorization)
+    user = await get_current_user(auth_param)
+    bookmarks = get_all_comics_bookmarks(user.username)
+    return {"comic_bookmarks": bookmarks}

@@ -2,7 +2,7 @@ run:
 	uvicorn main:app  --reload --host 0.0.0.0 --port 8000
 
 run-no-auth:
-	DISABLE_AUTH=False make run
+	DISABLE_AUTH=True make run
 
 test:
 	pytest

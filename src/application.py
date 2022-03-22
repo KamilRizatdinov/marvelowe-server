@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from typing import Optional
 
@@ -57,6 +58,9 @@ async def process_auth(request, call_next):
     # NOTE: very similar to fastapi.security.oauth2.OAuth2PasswordBearer.__call__
     authorization: str = request.headers.get("Authorization")
     scheme, auth_param = get_authorization_scheme_param(authorization)
+    if authorization is None and os.getenv("DISABLE_AUTH", False):
+        return await call_next(request)
+
     if not authorization or scheme.lower() != "bearer":
         logger.error(
             "Not authenticated for header %s. Scheme — %s, param -%s",
